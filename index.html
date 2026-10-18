@@ -1,973 +1,812 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart NFT Dashboard</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; background-color: #080d1a; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; }
-    .page { display: none; flex: 1; flex-direction: column; padding-bottom: 70px; }
-    .page.active { display: flex; }
-    .top-bar { padding: 12px; font-size: 15px; background-color: #111a30; text-align: center; color: #b0c4de; border-bottom: 1px solid #1e293b; }
-    .top-bar strong { color: #00d2ff; }
-    .container { padding: 15px; max-width: 500px; margin: 0 auto; width: 100%; flex: 1; text-align: center; }
-    .btn-main { width: 100%; padding: 15px; background: linear-gradient(135deg, #00c6ff, #0072ff); border: none; border-radius: 10px; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 15px; }
-    .stats-card { background: #111b33; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #1e293b; text-align: left; }
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .stat-num { font-size: 18px; font-weight: bold; }
-    .stat-label { font-size: 12px; color: #8a99ad; }
-    .action-buttons { display: flex; gap: 10px; margin-bottom: 15px; }
-    .btn-action { flex: 1; padding: 12px; background-color: #00a8ff; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 13px; cursor: pointer; }
-    .header-bar { padding: 15px; font-size: 18px; font-weight: bold; background-color: #111a30; text-align: center; border-bottom: 1px solid #1e293b; position: relative; display: flex; align-items: center; justify-content: center; }
-    .back-btn { position: absolute; left: 15px; font-size: 14px; color: #00d2ff; cursor: pointer; font-weight: bold; }
-    .game-details-btn { position: absolute; right: 15px; background: #111b33; border: 1px solid #1e293b; color: #00d2ff; padding: 5px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
-    .card-box { background: #111b33; border-radius: 12px; padding: 15px; border: 1px solid #1e293b; margin-bottom: 15px; text-align: left; }
-    .input-box { width: 100%; padding: 12px; background: #080d1a; border: 1px solid #1e293b; border-radius: 8px; color: white; font-size: 14px; margin-bottom: 12px; outline: none; }
-    .btn-submit { width: 100%; padding: 14px; background: #00bfff; border: none; border-radius: 8px; color: white; font-size: 15px; font-weight: bold; cursor: pointer; }
-    .btn-submit:disabled { background: #4b5563 !important; cursor: not-allowed; opacity: 0.6; }
-    .auth-title { font-size: 22px; font-weight: bold; color: #00d2ff; margin-bottom: 20px; text-align: center; }
-    .auth-switch { font-size: 13px; color: #8a99ad; margin-top: 15px; text-align: center; cursor: pointer; }
-    .auth-switch span { color: #00d2ff; font-weight: bold; }
-    
-    .history-item { background: #080d1a; border: 1px solid #1e293b; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
-    .status-processing { color: #f1c40f; font-weight: bold; }
-    .status-success { color: #2ed573; font-weight: bold; }
-    .status-rejected { color: #ff4757; font-weight: bold; }
-    
-    .nav-bar { display: none; justify-content: space-around; background-color: #0d1322; padding: 10px 0; border-top: 1px solid #1e293b; position: fixed; bottom: 0; width: 100%; z-index: 100; }
-    .nav-item { color: #8a99ad; font-size: 11px; cursor: pointer; text-align: center; flex: 1; }
-    .nav-item.active { color: #00d2ff; font-weight: bold; }
-    .nav-icon { font-size: 16px; display: block; margin-bottom: 2px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart NFT Dashboard & Video Ads</title>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #080e1e; color: #ffffff; min-height: 100vh; padding-bottom: 70px; }
+        .top-earning-bar { background: #111a2e; padding: 12px; text-align: center; color: #38bdf8; font-weight: bold; font-size: 15px; border-bottom: 1px solid #1e293b; }
+        .container { padding: 15px; max-width: 500px; margin: 0 auto; }
+        .card { background: #111a2e; border-radius: 12px; padding: 16px; margin-bottom: 15px; border: 1px solid #1e293b; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; box-sizing: border-box; }
+        .btn-blue { background: #0284c7; color: #fff; }
+        .btn-cyan { background: #0d9488; color: #fff; }
+        .btn-pink { background: #db2777; color: #fff; }
+        .btn-orange { background: #ea580c; color: #fff; }
+        .btn-green { background: #16a34a; color: #fff; }
+        .btn-purple { background: #9333ea; color: #fff; }
+        .btn-red { background: #dc2626; color: #fff; }
+        .btn-disabled { background: #334155 !important; color: #94a3b8 !important; cursor: not-allowed; }
+        .btn-back { background: transparent; color: #38bdf8; border: none; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; margin-bottom: 15px; font-weight: 600; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        input, select { width: 100%; padding: 12px; background: #080e1e; border: 1px solid #1e293b; color: #fff; border-radius: 8px; margin-top: 6px; margin-bottom: 12px; font-size: 14px; outline: none; }
+        input:focus { border-color: #38bdf8; }
+        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #111a2e; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #1e293b; z-index: 1000; }
+        .nav-item { color: #94a3b8; text-decoration: none; font-size: 11px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .nav-item.active { color: #38bdf8; font-weight: bold; }
+        .nav-icon { font-size: 18px; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; margin: 10px 0; background: #000; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .timer-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.85); color: #38bdf8; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; border: 1px solid #38bdf8; z-index: 10; }
+        .history-item { background: #080e1e; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #16a34a; }
+        .history-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; margin-bottom: 6px; }
+        .history-details { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 12px; color: #94a3b8; background: #151f32; padding: 8px; border-radius: 6px; margin-top: 6px; }
+        
+        /* MENU LIST ITEMS */
+        .menu-list { display: flex; flex-direction: column; gap: 2px; background: #111a2e; border-radius: 12px; overflow: hidden; border: 1px solid #1e293b; margin-bottom: 15px; }
+        .menu-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #111a2e; color: #fff; text-decoration: none; border-bottom: 1px solid #1e293b; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:hover { background: #182238; }
+        .menu-left { display: flex; align-items: center; gap: 12px; }
+        .menu-icon { font-size: 18px; color: #0284c7; width: 24px; text-align: center; }
+        .menu-arrow { color: #64748b; font-size: 14px; }
 
-    .game-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-    .game-table th, .game-table td { border: 1px solid #1e293b; padding: 8px; text-align: center; }
-    .game-table th { background-color: #080d1a; color: #00d2ff; }
-
-    .btn-approve { background: #2ed573; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; }
-    .btn-reject { background: #ff4757; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; margin-left: 5px; }
-  </style>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+        .page { display: none; }
+        .page.active { display: block; }
+        .status-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .bg-pending { background: #ea580c; color: #fff; }
+        .bg-success { background: #16a34a; color: #fff; }
+        .bg-rejected { background: #dc2626; color: #fff; }
+    </style>
 </head>
 <body>
 
-  <!-- LOGIN PAGE -->
-  <div id="loginPage" class="page active">
-    <div class="container" style="display: flex; flex-direction: column; justify-content: center; min-height: 90vh;">
-      <div class="card-box">
-        <div class="auth-title">🔐 Secure Login</div>
-        <input type="text" id="loginPhoneInput" class="input-box" placeholder="Phone Number (11 Digits)" maxlength="11">
-        <input type="password" id="loginPassInput" class="input-box" placeholder="Password">
-        
-        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-          <input type="text" id="loginOtpInput" class="input-box" placeholder="OTP Code" style="margin-bottom:0;">
-          <button type="button" id="loginOtpBtn" class="btn-submit" style="background: #f39c12; width: 130px; height: 44px; font-size: 12px;" onclick="sendLoginOtp()">Send OTP</button>
-        </div>
-
-        <button class="btn-submit" style="background:#00a8ff;" onclick="handleLogin()">Login</button>
-        <div class="auth-switch" onclick="showPage('registerPage')">Don't have an account? <span>Register</span></div>
-      </div>
+    <div class="top-earning-bar">
+        Today's Earnings : <span id="topTodayEarnings">0.0000</span> TRX
     </div>
-  </div>
 
-  <!-- REGISTRATION PAGE -->
-  <div id="registerPage" class="page">
-    <div class="container" style="display: flex; flex-direction: column; justify-content: center; min-height: 90vh;">
-      <div class="card-box">
-        <div class="auth-title">📝 Register</div>
-        <input type="text" id="regNameInput" class="input-box" placeholder="Your Name">
-        <input type="text" id="regPhoneInput" class="input-box" placeholder="Phone Number (11 Digits)" maxlength="11">
-        <input type="text" id="regRefCodeInput" class="input-box" placeholder="Referral Code / User ID (Optional)">
-        
-        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-          <input type="text" id="regCodeInput" class="input-box" placeholder="Verification Code" style="margin-bottom:0;">
-          <button type="button" id="regOtpBtn" class="btn-submit" style="background: #f39c12; width: 130px; height: 44px; font-size: 12px;" onclick="sendSmsCode()">Send Code</button>
-        </div>
-
-        <input type="password" id="regPassInput" class="input-box" placeholder="Password">
-        <input type="password" id="regConfirmPassInput" class="input-box" placeholder="Confirm Password">
-        <button class="btn-submit" onclick="handleRegister()">Register</button>
-        <div class="auth-switch" onclick="showPage('loginPage')">Already have an account? <span>Login</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- HOME PAGE -->
-  <div id="homePage" class="page">
-    <div class="top-bar">Today's Earnings : <strong id="dailyEarnings">0.0000 TRX</strong></div>
-    <div class="container" style="text-align: left;">
-      <button class="btn-main" onclick="showPage('videoPage')">Start earning now</button>
-      <button class="btn-main" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); margin-top: -5px;" onclick="showPage('gameDetailsPage')">🎮 Game & Level Details</button>
-      
-      <div class="stats-card">
-        <div class="stats-grid">
-          <div><div class="stat-num" id="totalBalance">0.00</div><div class="stat-label">Total Balance (TRX)</div></div>
-          <div><div class="stat-num">33-39 Days</div><div class="stat-label">Doubling Period</div></div>
-        </div>
-      </div>
-
-      <div class="action-buttons">
-        <button class="btn-action" style="background:#e67e22;" onclick="showPage('rechargePage')">Recharge</button>
-        <button class="btn-action" style="background:#2ed573;" onclick="showPage('withdrawPage')">Withdraw</button>
-      </div>
-      <div class="action-buttons">
-        <button class="btn-action" style="background:#00d2ff;" onclick="showPage('teamPage')">👥 My Team</button>
-        <button class="btn-action" style="background:#7158e2;" onclick="showPage('settingsPage')">⚙️ Settings</button>
-      </div>
-      
-      <button id="adminPanelBtn" class="btn-action" style="width: 100%; background:#9b59b6; margin-bottom: 8px; display: none;" onclick="showPage('adminPage')">👑 Admin Control Panel</button>
-      <button class="btn-action" style="width: 100%; background:#eb4d4b;" onclick="logoutUser()">🚪 Logout</button>
-    </div>
-  </div>
-
-  <!-- GAME DETAILS PAGE -->
-  <div id="gameDetailsPage" class="page">
-    <div class="header-bar">
-      <span class="back-btn" onclick="showPage('homePage')">&lt; Home Back</span> 
-      Game & Level Rules
-    </div>
-    <div class="container" style="text-align: left;">
-      <div class="card-box">
-        <p style="font-size: 15px; color: #00d2ff; font-weight: bold; margin-bottom: 8px;">🎮 Smart Task & Earning Rules</p>
-        <p style="font-size: 12px; color: #8a99ad; line-height: 1.5; margin-bottom: 12px;">
-          After watching the full video, TRX will be processed based on your balance and daily profits will be added according to your level. You cannot fast-forward or skip the video.
-        </p>
-
-        <p style="font-size: 13px; color: #2ed573; font-weight: bold; margin-bottom: 5px;">📊 Level Rules & Doubling Time:</p>
-        <table class="game-table">
-          <thead>
-            <tr>
-              <th>Level</th>
-              <th>Min Investment</th>
-              <th>Daily Profit</th>
-              <th>Doubling Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Level 1</td><td>15 TRX</td><td>1.78%</td><td>39 Days</td></tr>
-            <tr><td>Level 2</td><td>30 TRX</td><td>2.00%</td><td>37 Days</td></tr>
-            <tr><td>Level 3</td><td>50 TRX</td><td>2.50%</td><td>36 Days</td></tr>
-            <tr><td>Level 4</td><td>100 TRX</td><td>2.70%</td><td>34 Days</td></tr>
-            <tr><td>Level 5</td><td>500 TRX</td><td>3.00%</td><td>33 Days</td></tr>
-            <tr><td>Level 6</td><td>1000 TRX</td><td>3.50%</td><td>33 Days</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="card-box">
-        <p style="font-size: 14px; color: #f1c40f; font-weight: bold; margin-bottom: 8px;">👥 Referral Commission Levels</p>
-        <p style="font-size: 12px; color: #8a99ad; line-height: 1.6;">
-          • <strong>Level 1 Referral:</strong> 13% Commission<br>
-          • <strong>Level 2 Referral:</strong> 7% Commission<br>
-          • <strong>Level 3 Referral:</strong> 4% Commission
-        </p>
-      </div>
-
-      <div class="card-box">
-        <p style="font-size: 14px; color: #00d2ff; font-weight: bold; margin-bottom: 10px;">🎮 Active Game Details</p>
-        <div id="activeGamesContainer">
-          <div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 10px;">No active game levels purchased yet.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TEAM PAGE -->
-  <div id="teamPage" class="page">
-    <div class="header-bar"><span class="back-btn" onclick="showPage('homePage')">&lt; Home Back</span> My Team & Commissions</div>
-    <div class="container" style="text-align: left;">
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px;">
-        <div class="level-tab active" onclick="switchTeamLevel(1, this)" style="padding:10px; background:#00a8ff; border-radius:8px; text-align:center; font-size:12px; font-weight:bold; cursor:pointer;">Level 1</div>
-        <div class="level-tab" onclick="switchTeamLevel(2, this)" style="padding:10px; background:#080d1a; border:1px solid #1e293b; border-radius:8px; text-align:center; font-size:12px; font-weight:bold; cursor:pointer; color:#8a99ad;">Level 2</div>
-        <div class="level-tab" onclick="switchTeamLevel(3, this)" style="padding:10px; background:#080d1a; border:1px solid #1e293b; border-radius:8px; text-align:center; font-size:12px; font-weight:bold; cursor:pointer; color:#8a99ad;">Level 3</div>
-      </div>
-
-      <div class="card-box">
-        <p id="teamLevelTitle" style="font-size: 14px; color: #00d2ff; font-weight: bold; margin-bottom: 10px;">👥 Level 1 Team Members</p>
-        <div id="teamMembersContainer">
-          <div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 10px;">Loading team members...</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- VIDEO TASK CENTER PAGE -->
-  <div id="videoPage" class="page">
-    <div class="header-bar">
-      <span class="back-btn" onclick="showPage('homePage')">&lt; Home Back</span> 
-      Video Task Center
-      <button class="game-details-btn" onclick="showPage('gameDetailsPage')">🎮 Game Details</button>
-    </div>
-    
-    <div class="container" style="text-align: left;" id="levelsContainer">
-    </div>
-  </div>
-
-  <!-- RECHARGE PAGE -->
-  <div id="rechargePage" class="page">
-    <div class="header-bar"><span class="back-btn" onclick="showPage('homePage')">&lt; Home Back</span> Recharge TRX</div>
-    <div class="container" style="text-align: left;">
-      <div class="card-box">
-        <p style="font-size: 13px; color: #8a99ad; margin-bottom: 8px;">Deposit Address:</p>
-        <input type="text" id="dynamicDepositAddress" class="input-box" value="TAvpKe3z1LNq7LMeoJ7NWaAty8NJ2D9aEC" readonly>
-        <input type="number" id="rechargeAmount" class="input-box" placeholder="Amount (TRX)">
-        <input type="text" id="txidInput" class="input-box" placeholder="Transaction ID / Hash (TXID)">
-        <button class="btn-submit" onclick="processRecharge()">Confirm Recharge</button>
-      </div>
-      <div class="card-box" style="margin-top: 15px;">
-        <p style="font-size: 13px; color: #00d2ff; margin-bottom: 8px;">Deposit Details (DP History):</p>
-        <div id="rechargeHistoryContainer">
-          <div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 5px;">No recent deposit records</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- WITHDRAW PAGE -->
-  <div id="withdrawPage" class="page">
-    <div class="header-bar"><span class="back-btn" onclick="showPage('homePage')">&lt; Home Back</span> Withdraw TRX</div>
-    <div class="container" style="text-align: left;">
-      <div class="card-box">
-        <p style="font-size: 13px; color: #8a99ad; margin-bottom: 12px;">Account Balance: <strong id="walletBalanceDisplay" style="color: #ffffff;">0.00</strong> TRX</p>
-        <input type="number" id="withdrawAmtInput" class="input-box" placeholder="Withdrawal Amount (TRX)">
-        <p style="font-size: 11px; color: #f1c40f; margin-bottom: 12px;">ℹ️ Withdraw Fee: 7% will be deducted.</p>
-        <input type="text" id="binanceAddressInput" class="input-box" placeholder="Binance / Tron Wallet Address">
-        <input type="password" id="withdrawPassInput" class="input-box" placeholder="Fund Password">
-        <button class="btn-submit" style="background: #2ecc71; margin-top: 10px;" onclick="submitWithdrawal()">Submit Withdraw</button>
-      </div>
-      <div class="card-box" style="margin-top: 15px;">
-        <p style="font-size: 13px; color: #00d2ff; margin-bottom: 8px;">Withdrawal Status History:</p>
-        <div id="withdrawHistoryContainer">
-          <div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 5px;">No recent withdrawal records</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SETTINGS PAGE -->
-  <div id="settingsPage" class="page">
-    <div class="header-bar"><span class="back-btn" onclick="showPage('homePage')">&lt; Home Back</span> Settings</div>
-    <div class="container" style="text-align: left;">
-      <div class="card-box">
-        <p style="font-size: 14px; color: #00d2ff; font-weight: bold; margin-bottom: 10px;">👤 User Profile</p>
-        <p style="font-size: 12px; color: #8a99ad; margin-bottom: 5px;">Name: <span id="settingsName" style="color:#fff; font-weight: bold;">-</span></p>
-        <p style="font-size: 12px; color: #8a99ad;">User ID: <span id="settingsUserId" style="color:#2ed573; font-weight: bold;">-</span></p>
-      </div>
-
-      <div class="card-box">
-        <p style="font-size: 14px; color: #00d2ff; font-weight: bold; margin-bottom: 8px;">🔗 Referring Link</p>
-        <input type="text" id="referralLinkInput" class="input-box" readonly style="color: #2ed573; font-size: 12px;">
-        <button class="btn-submit" style="background: #00a8ff; padding: 10px;" onclick="copyReferralLink()">📋 Copy Referral Link</button>
-      </div>
-
-      <div class="card-box">
-        <p style="font-size: 14px; color: #f1c40f; font-weight: bold; margin-bottom: 12px;">🔑 Change Password</p>
-        <input type="password" id="oldPassInput" class="input-box" placeholder="Current Password">
-        <input type="password" id="newPassInput" class="input-box" placeholder="New Password">
-        <input type="password" id="confirmNewPassInput" class="input-box" placeholder="Confirm New Password">
-        <button class="btn-submit" style="background: #e67e22;" onclick="changePassword()">Update Password</button>
-      </div>
-
-      <div class="card-box">
-        <p style="font-size: 13px; color: #00d2ff; font-weight: bold; margin-bottom: 8px;">💳 Deposit History (DP):</p>
-        <div id="settingsDpHistoryContainer">
-          <div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 5px;">No deposit records found</div>
-        </div>
-      </div>
-
-      <div class="card-box">
-        <p style="font-size: 13px; color: #2ed573; font-weight: bold; margin-bottom: 8px;">💰 Withdraw History (WD):</p>
-        <div id="settingsWdHistoryContainer">
-          <div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 5px;">No withdrawal records found</div>
-        </div>
-      </div>
-
-      <button class="btn-submit" style="background: #eb4d4b; margin-top: 5px; margin-bottom: 15px;" onclick="logoutUser()">🚪 Logout Account</button>
-    </div>
-  </div>
-
-  <!-- ADMIN CONTROL PANEL PAGE -->
-  <div id="adminPage" class="page">
-    <div class="header-bar"><span class="back-btn" onclick="showPage('homePage')">&lt; Home Back</span> 👑 Admin Panel</div>
-    <div class="container" style="text-align: left;">
-      
-      <div class="card-box">
-        <p style="font-size: 14px; color: #f1c40f; font-weight: bold; margin-bottom: 8px;">⚙️ Admin Deposit Address Settings</p>
-        <input type="text" id="adminDepositAddressInput" class="input-box" placeholder="Enter Tron TRC20 Address">
-        <button class="btn-submit" style="background: #00a8ff; padding: 10px;" onclick="updateAdminDepositAddress()">Update Deposit Address</button>
-      </div>
-
-      <div class="card-box">
-        <p style="font-size: 14px; color: #00d2ff; font-weight: bold; margin-bottom: 10px;">💳 Pending Deposits (DP Request Approval)</p>
-        <div id="adminDepositsListContainer">
-          <div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 10px;">Loading pending deposits...</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- BOTTOM NAV BAR -->
-  <div class="nav-bar" id="bottomNavBar">
-    <div class="nav-item active" onclick="showPage('homePage')"><span class="nav-icon">🏠</span>Home</div>
-    <div class="nav-item" onclick="showPage('videoPage')"><span class="nav-icon">🎬</span>Video</div>
-    <div class="nav-item" onclick="showPage('rechargePage')"><span class="nav-icon">💳</span>Recharge</div>
-    <div class="nav-item" onclick="showPage('withdrawPage')"><span class="nav-icon">💰</span>Withdraw</div>
-    <div class="nav-item" onclick="showPage('settingsPage')"><span class="nav-icon">⚙️</span>Settings</div>
-  </div>
-
-  <script>
-    const firebaseConfig = {
-      databaseURL: "https://my-trx-site-default-rtdb.firebaseio.com"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    let currentUser = null;
-    let userBalance = 0.00;
-    let generatedRegOtp = "";
-    let generatedLoginOtp = "";
-    let currentTeamLevel = 1;
-    let timerInterval = null;
-
-    const levelSettings = {
-      1: { minTrx: 15, rate: 0.0178, days: "39" },
-      2: { minTrx: 30, rate: 0.0200, days: "37" },
-      3: { minTrx: 50, rate: 0.0250, days: "36" },
-      4: { minTrx: 100, rate: 0.0270, days: "34" },
-      5: { minTrx: 500, rate: 0.0300, days: "33" },
-      6: { minTrx: 1000, rate: 0.0350, days: "33" }
-    };
-
-    let videoValidTimes = {};
-
-    window.onload = function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const refParam = urlParams.get('ref');
-      if(refParam) {
-        let refInput = document.getElementById('regRefCodeInput');
-        if(refInput) refInput.value = refParam;
-      }
-      renderVideoTasks();
-    };
-
-    function renderVideoTasks() {
-      let container = document.getElementById('levelsContainer');
-      container.innerHTML = '';
-
-      for (let lvl = 1; lvl <= 6; lvl++) {
-        let info = levelSettings[lvl];
-        let dailyComm = (info.minTrx * info.rate).toFixed(2);
-        let btnColor = lvl % 2 === 0 ? "#f39c12" : "#00bfff";
-
-        container.innerHTML += `
-          <div class="card-box">
-            <video id="taskVideo_${lvl}" style="width: 100%; border-radius: 8px; margin-bottom: 8px;" controls controlsList="nodownload noremovetrack" onplay="checkVideoPlay(${lvl})" ontimeupdate="trackVideoTime(${lvl})" onseeking="preventSeeking(${lvl})" onended="enableClaim(${lvl})">
-              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-              Your browser does not support HTML5 video.
-            </video>
-            <p style="font-size: 14px; color: #00d2ff; font-weight: bold; margin-bottom: 2px;">Level ${lvl} (Cost: ${info.minTrx} TRX)</p>
-            <p style="font-size: 12px; color: #2ed573; margin-bottom: 10px; font-weight: bold;">Daily Commission: ${dailyComm} TRX (${(info.rate*100).toFixed(2)}%)</p>
-            <button id="buyBtn_${lvl}" class="btn-submit" style="background: ${btnColor}; padding: 10px;" disabled onclick="buyLevel(${lvl})">Buy Level ${lvl}</button>
-          </div>
-        `;
-        videoValidTimes[lvl] = 0;
-      }
-    }
-
-    function checkVideoPlay(lvl) {
-      let video = document.getElementById('taskVideo_' + lvl);
-      let info = levelSettings[lvl];
-
-      if(userBalance < info.minTrx) {
-        video.pause();
-        alert(`⚠️ Insufficient balance! Minimum ${info.minTrx} TRX required for Level ${lvl}. Current Balance: ${userBalance.toFixed(2)} TRX.`);
-      }
-    }
-
-    function trackVideoTime(lvl) {
-      let video = document.getElementById('taskVideo_' + lvl);
-      if (!video.seeking) {
-        videoValidTimes[lvl] = video.currentTime;
-      }
-    }
-
-    function preventSeeking(lvl) {
-      let video = document.getElementById('taskVideo_' + lvl);
-      if (userBalance >= levelSettings[lvl].minTrx) {
-        if (video.currentTime > videoValidTimes[lvl] + 1) {
-          video.currentTime = videoValidTimes[lvl];
-          alert("⚠️ Fast-forwarding or skipping is not allowed!");
-        }
-      }
-    }
-
-    function enableClaim(lvl) {
-      let btn = document.getElementById('buyBtn_' + lvl);
-      if(btn) btn.disabled = false;
-    }
-
-    function buyLevel(lvl) {
-      if(!currentUser) { alert("Please login first!"); return; }
-      let info = levelSettings[lvl];
-
-      if(userBalance < info.minTrx) {
-        alert("Insufficient account balance!");
-        return;
-      }
-
-      let cost = info.minTrx;
-      let profit = cost * info.rate;
-      let netChange = profit - cost;
-
-      db.ref('users/' + currentUser + '/balance').transaction(current => {
-        let currentBal = parseFloat(current) || 0;
-        if(currentBal < cost) return;
-        return currentBal + netChange;
-      }, (err, committed) => {
-        if(!err && committed) {
-          let purchaseId = Date.now();
-          let expiryTime = Date.now() + (24 * 60 * 60 * 1000);
-
-          db.ref('users/' + currentUser + '/purchasedLevels/' + purchaseId).set({
-            level: lvl,
-            cost: cost,
-            profit: profit.toFixed(4),
-            totalReturn: (cost + profit).toFixed(4),
-            expiryTime: expiryTime
-          });
-
-          alert(`🎉 Level ${lvl} Purchased Successfully!\nCost Deducted: ${cost} TRX\nDaily Profit Added: ${profit.toFixed(4)} TRX`);
-          document.getElementById('buyBtn_' + lvl).disabled = true;
-          loadActiveGames();
-        } else {
-          alert("Transaction failed! Check your connection.");
-        }
-      });
-    }
-
-    function loadActiveGames() {
-      if(!currentUser) return;
-      
-      db.ref('users/' + currentUser + '/purchasedLevels').on('value', snapshot => {
-        let container = document.getElementById('activeGamesContainer');
-        if(timerInterval) clearInterval(timerInterval);
-
-        if(snapshot.exists()) {
-          let items = [];
-          snapshot.forEach(child => {
-            let val = child.val();
-            if(!val.expiryTime) {
-              val.expiryTime = Date.now() + (24 * 60 * 60 * 1000);
-            }
-            items.push({ key: child.key, ...val });
-          });
-
-          function updateTimers() {
-            let html = '';
-            let now = Date.now();
-
-            items.forEach(data => {
-              let diff = data.expiryTime - now;
-              let timeStr = "";
-
-              if(diff > 0) {
-                let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                let seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-                timeStr = `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s left`;
-              } else {
-                timeStr = "Expired";
-              }
-
-              html += `
-                <div style="background: #080d1a; border: 1px solid #1e293b; border-radius: 8px; padding: 10px; margin-bottom: 8px; font-size: 12px;">
-                  <p style="color: #00d2ff; font-weight: bold; margin-bottom: 4px;">🎯 Level ${data.level} Active Offer</p>
-                  <p>💰 Buy Price: ${data.cost} TRX</p>
-                  <p style="color: #2ed573;">🎁 Commission: +${data.profit} TRX</p>
-                  <p>💵 Total Return: ${data.totalReturn} TRX</p>
-                  <p style="color: #f1c40f; margin-top: 4px;">⏳ ${timeStr}</p>
-                </div>
-              `;
-            });
-            container.innerHTML = html;
-          }
-
-          updateTimers();
-          timerInterval = setInterval(updateTimers, 1000);
-        } else {
-          container.innerHTML = `<div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 10px;">No active game levels purchased yet.</div>`;
-        }
-      });
-    }
-
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      let target = document.getElementById(pageId);
-      if(target) target.classList.add('active');
-
-      let navBar = document.getElementById('bottomNavBar');
-      if (pageId === 'loginPage' || pageId === 'registerPage') {
-        navBar.style.display = 'none';
-      } else {
-        navBar.style.display = 'flex';
-      }
-
-      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-      if(pageId === 'homePage') document.querySelectorAll('.nav-item')[0].classList.add('active');
-      if(pageId === 'videoPage') document.querySelectorAll('.nav-item')[1].classList.add('active');
-      if(pageId === 'rechargePage') document.querySelectorAll('.nav-item')[2].classList.add('active');
-      if(pageId === 'withdrawPage') document.querySelectorAll('.nav-item')[3].classList.add('active');
-      if(pageId === 'settingsPage') document.querySelectorAll('.nav-item')[4].classList.add('active');
-
-      if(pageId === 'withdrawPage' || pageId === 'rechargePage' || pageId === 'settingsPage') { listenHistory(); }
-      if(pageId === 'teamPage') { loadTeamMembers(currentTeamLevel); }
-      if(pageId === 'rechargePage') { listenDepositAddress(); }
-      if(pageId === 'gameDetailsPage') { loadActiveGames(); }
-      if(pageId === 'adminPage') { listenAdminDeposits(); }
-    }
-
-    function logoutUser() {
-      currentUser = null;
-      if(timerInterval) clearInterval(timerInterval);
-      document.getElementById('bottomNavBar').style.display = 'none';
-      document.getElementById('adminPanelBtn').style.display = 'none';
-      showPage('loginPage');
-    }
-
-    function copyReferralLink() {
-      let refInput = document.getElementById('referralLinkInput');
-      refInput.select();
-      refInput.setSelectionRange(0, 99999);
-      document.execCommand('copy');
-      alert("📋 Referral link copied to clipboard!");
-    }
-
-    function switchTeamLevel(lvl, el) {
-      currentTeamLevel = lvl;
-      let tabs = document.querySelectorAll('#teamPage .level-tab');
-      tabs.forEach(tab => {
-        tab.classList.remove('active');
-        tab.style.background = "#080d1a";
-        tab.style.border = "1px solid #1e293b";
-        tab.style.color = "#8a99ad";
-      });
-      el.classList.add('active');
-      el.style.background = "#00a8ff";
-      el.style.border = "none";
-      el.style.color = "#white";
-
-      let commRate = lvl === 1 ? "13%" : (lvl === 2 ? "7%" : "4%");
-      document.getElementById('teamLevelTitle').innerText = `👥 Level ${lvl} Team Members (${commRate} Commission)`;
-      loadTeamMembers(lvl);
-    }
-
-    function loadTeamMembers(lvl) {
-      db.ref('users').once('value', snapshot => {
-        let container = document.getElementById('teamMembersContainer');
-        container.innerHTML = '';
-        let allUsers = [];
-        snapshot.forEach(child => {
-          allUsers.push(child.val());
-        });
-
-        let filteredUsers = [];
-        let commRate = lvl === 1 ? 0.13 : (lvl === 2 ? 0.07 : 0.04);
-
-        allUsers.forEach((u, index) => {
-          if (u.phone !== currentUser) {
-            if (lvl === 1 && index % 3 === 0) filteredUsers.push(u);
-            if (lvl === 2 && index % 3 === 1) filteredUsers.push(u);
-            if (lvl === 3 && index % 3 === 2) filteredUsers.push(u);
-          }
-        });
-
-        if(filteredUsers.length === 0 && allUsers.length > 1) {
-          filteredUsers = allUsers.filter(u => u.phone !== currentUser);
-        }
-
-        if(filteredUsers.length > 0) {
-          filteredUsers.forEach(u => {
-            container.innerHTML += `
-              <div class="history-item">
+    <div class="container">
+        <!-- AUTH PAGE -->
+        <div id="pageAuth" class="page active">
+            <div class="card" style="margin-top: 30px;">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #38bdf8;">Smart NFT Portal</h2>
                 <div>
-                  <span>Name: <strong>${u.name || 'User'}</strong></span><br>
-                  <span style="font-size: 11px; color: #2ed573; font-weight: bold;">User ID: ${u.userId || '0.01'}</span>
+                    <label style="font-size: 13px; color: #94a3b8;">Phone / Account Number</label>
+                    <input type="text" id="authPhone" placeholder="Enter phone number">
+                    
+                    <label style="font-size: 13px; color: #94a3b8;">Password</label>
+                    <input type="password" id="authPass" placeholder="Enter password">
+
+                    <div id="registerFields" style="display: none;">
+                        <label style="font-size: 13px; color: #94a3b8;">Account Holder Name</label>
+                        <input type="text" id="authName" placeholder="Enter full name">
+                        <label style="font-size: 13px; color: #94a3b8;">Referral Code (Optional)</label>
+                        <input type="text" id="authRef" placeholder="Referral code">
+                    </div>
+
+                    <button class="btn btn-blue" id="authSubmitBtn" onclick="handleAuthSubmit()">Login</button>
+                    <button class="btn btn-purple" style="margin-top: 10px;" onclick="toggleAuthMode()" id="authToggleBtn">Need an account? Register</button>
                 </div>
-                <div style="text-align: right;">
-                  <span style="font-size: 10px; color: #f1c40f;">Commission: ${(commRate * 100)}%</span>
+            </div>
+        </div>
+
+        <!-- HOME PAGE -->
+        <div id="pageHome" class="page">
+            <div class="grid-2">
+                <button class="btn btn-blue" onclick="navigateTo('pageVideoTask')">🎬 Smart Video Ads & Earn Task</button>
+                <button class="btn btn-cyan" onclick="navigateTo('pageTaskHistory')">📜 Task History</button>
+            </div>
+
+            <button class="btn btn-pink" style="margin-top: 10px;" onclick="navigateTo('pageTaskHistory')">🎮 Task & Option Details</button>
+
+            <div class="card" style="margin-top: 15px;">
+                <div class="grid-2">
+                    <div>
+                        <h2 id="dashBalance" style="font-size: 24px; color: #38bdf8;">0.00</h2>
+                        <small style="color: #94a3b8;">Total Balance (TRX)</small>
+                    </div>
+                    <div style="text-align: right;">
+                        <h3 style="color: #ffffff; font-size: 16px;">35 Days Doubling</h3>
+                        <small style="color: #94a3b8;">1.99% Daily Compound Rate</small>
+                    </div>
                 </div>
-              </div>`;
-          });
-        } else {
-          container.innerHTML = `<div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 10px;">No members found in Level ${lvl}</div>`;
-        }
-      });
-    }
+            </div>
 
-    function changePassword() {
-      let oldPass = document.getElementById('oldPassInput').value.trim();
-      let newPass = document.getElementById('newPassInput').value.trim();
-      let confirmNewPass = document.getElementById('confirmNewPassInput').value.trim();
+            <div class="grid-2">
+                <button class="btn btn-orange" onclick="navigateTo('pageRecharge')">Recharge</button>
+                <button class="btn btn-green" onclick="navigateTo('pageWithdraw')">Withdraw</button>
+            </div>
 
-      if(!oldPass || !newPass || !confirmNewPass) { alert("Please fill in all password fields!"); return; }
-      if(newPass !== confirmNewPass) { alert("New passwords do not match!"); return; }
+            <div class="grid-2" style="margin-top: 10px;">
+                <button class="btn btn-blue" onclick="navigateTo('pageTeam')">👥 My Team & Commissions</button>
+                <button class="btn btn-purple" onclick="navigateTo('pageSettings')">⚙️ Settings</button>
+            </div>
 
-      db.ref('users/' + currentUser).once('value', snapshot => {
-        let user = snapshot.val();
-        if(user && user.pass === oldPass) {
-          db.ref('users/' + currentUser + '/pass').set(newPass, (err) => {
-            if(!err) {
-              alert("Password changed successfully!");
-              document.getElementById('oldPassInput').value = "";
-              document.getElementById('newPassInput').value = "";
-              document.getElementById('confirmNewPassInput').value = "";
-            } else {
-              alert("Failed to change password. Try again!");
-            }
-          });
-        } else {
-          alert("Incorrect current password!");
-        }
-      });
-    }
+            <div id="adminBtnContainer" style="display: none; margin-top: 10px;">
+                <button class="btn btn-red" onclick="navigateTo('pageAdmin')">⚙️ Admin Control Panel</button>
+            </div>
 
-    function sendSmsCode() {
-      let phone = document.getElementById('regPhoneInput').value.trim();
-      if(phone.length !== 11) { alert("Please enter a valid 11-digit phone number!"); return; }
-      generatedRegOtp = Math.floor(1000 + Math.random() * 9000).toString();
-      alert("Your Registration Verification Code is: " + generatedRegOtp);
-    }
+            <button class="btn btn-red" style="margin-top: 15px;" onclick="logout()">🚪 Logout</button>
+        </div>
 
-    function handleRegister() {
-      let name = document.getElementById('regNameInput').value.trim();
-      let phone = document.getElementById('regPhoneInput').value.trim();
-      let refCode = document.getElementById('regRefCodeInput').value.trim();
-      let code = document.getElementById('regCodeInput').value.trim();
-      let pass = document.getElementById('regPassInput').value.trim();
-      let confirmPass = document.getElementById('regConfirmPassInput').value.trim();
-      
-      if(!name || !phone || !pass) { alert("Please fill all required fields!"); return; }
-      if(phone.length !== 11) { alert("Phone number must be exactly 11 digits!"); return; }
-      if(pass !== confirmPass) { alert("Passwords do not match!"); return; }
-      if(code !== generatedRegOtp || !generatedRegOtp) { alert("Invalid OTP Code!"); return; }
+        <!-- VIDEO TASK PAGE -->
+        <div id="pageVideoTask" class="page">
+            <button class="btn-back" onclick="navigateTo('pageHome')">&lt; Home Back</button>
+            <h2 style="margin-bottom: 15px; color: #38bdf8;">🎬 Smart Video Ads</h2>
+            <div id="videoTasksList"></div>
+        </div>
 
-      db.ref('users').once('value', snapshot => {
-        let userCount = snapshot.numChildren();
-        let nextIdNum = (userCount + 1) * 0.01;
-        let userId = nextIdNum.toFixed(2);
+        <!-- TASK HISTORY PAGE -->
+        <div id="pageTaskHistory" class="page">
+            <button class="btn-back" onclick="navigateTo('pageHome')">&lt; Home Back</button>
+            <h2 style="margin-bottom: 15px; color: #38bdf8;">Task Earnings & Staking History</h2>
+            <div class="card">
+                <h3 style="margin-bottom: 12px; font-size: 16px;">📜 Completed Tasks Log</h3>
+                <div id="taskHistoryList">
+                    <div style="color: #94a3b8; text-align: center;">No completed task records found.</div>
+                </div>
+            </div>
+        </div>
 
-        db.ref('users/' + phone).set({ 
-          name: name, 
-          userId: userId, 
-          phone: phone, 
-          pass: pass, 
-          referredBy: refCode || "None",
-          balance: 0 
-        }, (err) => {
-          if(!err) {
-            alert("Registration Successful! Your User ID is: " + userId);
-            showPage('loginPage');
-          } else {
-            alert("Registration failed! Check connection.");
-          }
-        });
-      });
-    }
+        <!-- RECHARGE PAGE -->
+        <div id="pageRecharge" class="page">
+            <button class="btn-back" onclick="navigateTo('pageHome')">&lt; Home Back</button>
+            <h2 style="margin-bottom: 15px; color: #38bdf8;">💳 Deposit / Recharge TRX</h2>
+            <div class="card">
+                <p style="font-size: 13px; color: #94a3b8; margin-bottom: 10px;">Send TRX to official address:</p>
+                <input type="text" id="rechargeAddressDisplay" value="TE1uZ1NTAdgKdizRvL1UQFc775kUBn7S7G" readonly>
+                <button class="btn btn-cyan" onclick="copyText('rechargeAddressDisplay')">Copy Deposit Address</button>
+            </div>
+            <div class="card">
+                <label style="font-size: 13px; color: #94a3b8;">Deposit Amount (TRX)</label>
+                <input type="number" id="depositAmount" placeholder="Enter amount">
+                <label style="font-size: 13px; color: #94a3b8;">Transaction Hash / TXID</label>
+                <input type="text" id="depositTxid" placeholder="Enter TXID">
+                <button class="btn btn-orange" onclick="submitDeposit()">Submit Deposit Request</button>
+            </div>
+        </div>
 
-    function sendLoginOtp() {
-      let phone = document.getElementById('loginPhoneInput').value.trim();
-      let pass = document.getElementById('loginPassInput').value.trim();
-      if(phone.length !== 11 || !pass) { alert("Enter a valid 11-digit phone number and password first!"); return; }
-      
-      db.ref('users/' + phone).once('value', snapshot => {
-        let user = snapshot.val();
-        if(user && user.pass === pass) {
-          generatedLoginOtp = Math.floor(1000 + Math.random() * 9000).toString();
-          alert("Your Login OTP is: " + generatedLoginOtp);
-        } else {
-          alert("Incorrect phone number or password!");
-        }
-      });
-    }
+        <!-- WITHDRAW PAGE -->
+        <div id="pageWithdraw" class="page">
+            <button class="btn-back" onclick="navigateTo('pageHome')">&lt; Home Back</button>
+            <h2 style="margin-bottom: 15px; color: #38bdf8;">💰 Withdraw TRX</h2>
+            <div class="card">
+                <p style="font-size: 13px; color: #94a3b8; margin-bottom: 10px;">Withdrawal Fee: 7% (Net Pay: 93%)</p>
+                <label style="font-size: 13px; color: #94a3b8;">Withdrawal Amount (TRX)</label>
+                <input type="number" id="withdrawAmount" placeholder="Enter amount" oninput="calculateNetPay()">
+                <div style="margin-bottom: 10px; font-size: 13px; color: #16a34a; font-weight: 600;">
+                    Net Amount You Receive (93%): <span id="netPayDisplay">0.00</span> TRX
+                </div>
+                <label style="font-size: 13px; color: #94a3b8;">TRX Wallet Address</label>
+                <input type="text" id="withdrawAddress" placeholder="Enter TRX address">
+                <button class="btn btn-green" onclick="submitWithdrawal()">Submit Withdrawal Request</button>
+            </div>
+        </div>
 
-    function handleLogin() {
-      let phone = document.getElementById('loginPhoneInput').value.trim();
-      let pass = document.getElementById('loginPassInput').value.trim();
-      let otp = document.getElementById('loginOtpInput').value.trim();
-      
-      if(!phone || !pass || !otp) { alert("Please fill all fields!"); return; }
-      if(phone.length !== 11) { alert("Phone number must be exactly 11 digits!"); return; }
+        <!-- TEAM PAGE -->
+        <div id="pageTeam" class="page">
+            <button class="btn-back" onclick="navigateTo('pageHome')">&lt; Home Back</button>
+            <h2 style="margin-bottom: 15px; color: #38bdf8;">👥 My Team & Referral Commissions</h2>
+            <div class="card">
+                <h4 style="margin-bottom: 8px;">🔗 Your Referral Link</h4>
+                <input type="text" id="teamRefLink" readonly>
+                <button class="btn btn-blue" onclick="copyText('teamRefLink')">Copy Referral Link</button>
+            </div>
+            <div class="card">
+                <div class="grid-3" style="text-align: center;">
+                    <div>
+                        <small style="color: #94a3b8;">Level 1 (13%)</small>
+                        <h4 id="lvl1Count" style="margin-top: 4px;">0 Users</h4>
+                    </div>
+                    <div>
+                        <small style="color: #94a3b8;">Level 2 (6%)</small>
+                        <h4 id="lvl2Count" style="margin-top: 4px;">0 Users</h4>
+                    </div>
+                    <div>
+                        <small style="color: #94a3b8;">Level 3 (4%)</small>
+                        <h4 id="lvl3Count" style="margin-top: 4px;">0 Users</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-      db.ref('users/' + phone).once('value', snapshot => {
-        let user = snapshot.val();
-        if(user && user.pass === pass && otp === generatedLoginOtp) {
-          currentUser = phone;
-          
-          document.getElementById('settingsName').innerText = user.name || "N/A";
-          document.getElementById('settingsUserId').innerText = user.userId || "0.01";
-          
-          let refLink = window.location.origin + window.location.pathname + "?ref=" + (user.userId || phone);
-          document.getElementById('referralLinkInput').value = refLink;
-
-          if (user.role === 'admin' || phone === '01700000000') {
-            document.getElementById('adminPanelBtn').style.display = 'block';
-          }
-
-          listenUserData();
-          listenHistory();
-          loadActiveGames();
-          alert("Login Successful!");
-          showPage('homePage');
-        } else {
-          alert("Invalid credentials or incorrect OTP!");
-        }
-      });
-    }
-
-    function listenUserData() {
-      db.ref('users/' + currentUser + '/balance').on('value', snapshot => {
-        userBalance = parseFloat(snapshot.val()) || 0;
-        document.getElementById('totalBalance').innerText = userBalance.toFixed(2);
-        document.getElementById('walletBalanceDisplay').innerText = userBalance.toFixed(2);
-      });
-    }
-
-    function listenDepositAddress() {
-      db.ref('settings/depositAddress').on('value', snapshot => {
-        if(snapshot.exists()) {
-          document.getElementById('dynamicDepositAddress').value = snapshot.val();
-          let adminAddrInput = document.getElementById('adminDepositAddressInput');
-          if(adminAddrInput) adminAddrInput.value = snapshot.val();
-        }
-      });
-    }
-
-    function processRecharge() {
-      let amt = parseFloat(document.getElementById('rechargeAmount').value);
-      let txid = document.getElementById('txidInput').value.trim();
-      if(isNaN(amt) || amt <= 0 || txid === "") { alert("Enter valid amount and TXID!"); return; }
-      let reqId = Date.now();
-      
-      db.ref('deposits/' + reqId).set({ id: reqId, user: currentUser, amount: amt, txid: txid, status: 'Processing' }, (err) => {
-        if(!err) {
-          document.getElementById('rechargeAmount').value = ""; 
-          document.getElementById('txidInput').value = "";
-          alert("Deposit request submitted!");
-        }
-      });
-    }
-
-    function submitWithdrawal() {
-      let amt = parseFloat(document.getElementById('withdrawAmtInput').value);
-      let addr = document.getElementById('binanceAddressInput').value.trim();
-      let pass = document.getElementById('withdrawPassInput').value;
-
-      if (!amt || isNaN(amt) || amt <= 0) {
-        alert("Please enter a valid withdrawal amount!");
-        return;
-      }
-
-      if (amt > userBalance) {
-        alert("Insufficient balance in your account!");
-        return;
-      }
-
-      if (addr === "" || pass === "") {
-        alert("Please fill in address and fund password!");
-        return;
-      }
-
-      let userRef = db.ref('users/' + currentUser);
-
-      userRef.once('value', snapshot => {
-        let user = snapshot.val();
-        if (user && user.pass === pass) {
-          let reqId = Date.now();
-          let withdrawData = {
-            id: reqId,
-            user: currentUser,
-            amount: amt,
-            address: addr,
-            status: 'Processing',
-            time: new Date().toISOString()
-          };
-
-          userRef.child('balance').transaction(currentBal => {
-            let current = parseFloat(currentBal) || 0;
-            if (current >= amt) {
-              return current - amt;
-            } else {
-              return;
-            }
-          }, (error, committed, snapshot) => {
-            if (error || !committed) {
-              alert("Withdrawal failed! Check balance or network connection.");
-            } else {
-              userBalance = parseFloat(snapshot.val()) || 0;
-              document.getElementById('totalBalance').innerText = userBalance.toFixed(2);
-              document.getElementById('walletBalanceDisplay').innerText = userBalance.toFixed(2);
-
-              db.ref('withdraws/' + reqId).set(withdrawData, (err) => {
-                if (!err) {
-                  document.getElementById('withdrawAmtInput').value = "";
-                  document.getElementById('binanceAddressInput').value = "";
-                  document.getElementById('withdrawPassInput').value = "";
-                  alert("Withdrawal submitted successfully! TRX deducted from balance.");
-                } else {
-                  alert("Failed to record withdrawal request.");
-                }
-              });
-            }
-          });
-        } else {
-          alert("Incorrect fund password!");
-        }
-      });
-    }
-
-    function listenHistory() {
-      db.ref('deposits').on('value', snapshot => {
-        let container = document.getElementById('rechargeHistoryContainer');
-        let settingsContainer = document.getElementById('settingsDpHistoryContainer');
-        container.innerHTML = '';
-        settingsContainer.innerHTML = '';
-        let hasData = false;
-
-        snapshot.forEach(child => {
-          let h = child.val();
-
-          if(h.user === currentUser) {
-            hasData = true;
-            let statusText = h.status === "Success" ? "✅ Success" : (h.status === "Rejected" ? "❌ Rejected" : "⏳ Pending");
-            let itemHtml = `<div class="history-item"><div><span>Deposit: <strong>${h.amount} TRX</strong></span><br><span style="font-size: 10px; color: #8a99ad;">TXID: ${h.txid}</span></div><span class="status-${h.status.toLowerCase()}">${statusText}</span></div>`;
+        <!-- SETTINGS PAGE WITH NEW LIST OPTIONS -->
+        <div id="pageSettings" class="page">
+            <button class="btn-back" onclick="navigateTo('pageHome')">&lt; Home Back</button>
+            <h2 style="margin-bottom: 15px; color: #38bdf8;">⚙️ Account Settings</h2>
             
-            container.innerHTML += itemHtml;
-            settingsContainer.innerHTML += itemHtml;
-          }
-        });
+            <div class="card">
+                <h4 style="margin-bottom: 8px;">👤 Profile Overview</h4>
+                <p style="margin-top: 8px; font-size: 13px; color: #94a3b8;">Account Name: <span id="setProfileName" style="color: #fff;">-</span></p>
+                <p style="margin-top: 4px; font-size: 13px; color: #94a3b8;">Phone / Ref Code: <span id="setProfilePhone" style="color: #16a34a;">-</span></p>
+            </div>
 
-        if(!hasData) {
-          container.innerHTML = '<div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 5px;">No recent deposit records</div>';
-          settingsContainer.innerHTML = '<div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 5px;">No deposit records found</div>';
-        }
-      });
+            <div class="card">
+                <h4 style="margin-bottom: 8px;">🔗 Referral Details</h4>
+                <input type="text" id="setRefLink" readonly>
+                <button class="btn btn-blue" onclick="copyText('setRefLink')">Copy Link</button>
+            </div>
 
-      db.ref('withdraws').on('value', snapshot => {
-        let container = document.getElementById('withdrawHistoryContainer');
-        let settingsContainer = document.getElementById('settingsWdHistoryContainer');
-        container.innerHTML = '';
-        settingsContainer.innerHTML = '';
-        let hasData = false;
-
-        snapshot.forEach(child => {
-          let h = child.val();
-          if(h.user === currentUser) {
-            hasData = true;
-            let fee = (h.amount * 7) / 100, netReceive = h.amount - fee;
-            let statusText = h.status === "Success" ? "✅ Success" : (h.status === "Rejected" ? "❌ Rejected" : "⏳ Pending");
-            let itemHtml = `<div class="history-item"><div><span>Req: <strong>${h.amount} TRX</strong></span><br><span style="font-size: 10px; color: #2ed573;">Receive: ${netReceive.toFixed(2)} TRX</span></div><span class="status-${h.status.toLowerCase()}">${statusText}</span></div>`;
-
-            container.innerHTML += itemHtml;
-            settingsContainer.innerHTML += itemHtml;
-          }
-        });
-
-        if(!hasData) {
-          container.innerHTML = '<div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 5px;">No recent withdrawal records</div>';
-          settingsContainer.innerHTML = '<div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 5px;">No withdrawal records found</div>';
-        }
-      });
-    }
-
-    function updateAdminDepositAddress() {
-      let newAddress = document.getElementById('adminDepositAddressInput').value.trim();
-      if (!newAddress) { alert("Please enter a valid deposit address!"); return; }
-      db.ref('settings/depositAddress').set(newAddress, (err) => {
-        if (!err) {
-          alert("✅ Deposit Address updated successfully!");
-        } else {
-          alert("Failed to update deposit address!");
-        }
-      });
-    }
-
-    function listenAdminDeposits() {
-      db.ref('deposits').on('value', snapshot => {
-        let container = document.getElementById('adminDepositsListContainer');
-        container.innerHTML = '';
-        let hasPending = false;
-
-        snapshot.forEach(child => {
-          let dep = child.val();
-          let depKey = child.key;
-
-          if (dep.status === 'Processing' || dep.status === 'Pending') {
-            hasPending = true;
-            container.innerHTML += `
-              <div class="history-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-                <div>
-                  <span style="color:#00d2ff;">User: <strong>${dep.user}</strong></span><br>
-                  <span>Amount: <strong style="color:#2ed573;">${dep.amount} TRX</strong></span><br>
-                  <span style="font-size:10px; color:#8a99ad;">TXID: ${dep.txid}</span>
+            <!-- NEW LIST MENU AS IN SCREENSHOT -->
+            <div class="menu-list">
+                <div class="menu-item" onclick="togglePassForm()">
+                    <div class="menu-left">
+                        <span class="menu-icon">🔒</span>
+                        <span>Change Password</span>
+                    </div>
+                    <span class="menu-arrow">&gt;</span>
                 </div>
-                <div style="display:flex; width:100%; justify-content:flex-end; gap:8px;">
-                  <button class="btn-approve" onclick="approveDeposit('${depKey}', '${dep.user}', ${dep.amount})">Approve (+${dep.amount} TRX)</button>
-                  <button class="btn-reject" onclick="rejectDeposit('${depKey}')">Reject</button>
+
+                <div class="menu-item" onclick="togglePayPassForm()">
+                    <div class="menu-left">
+                        <span class="menu-icon">🛡️</span>
+                        <span>Change Payment Password</span>
+                    </div>
+                    <span class="menu-arrow">&gt;</span>
                 </div>
-              </div>
-            `;
-          }
-        });
 
-        if (!hasPending) {
-          container.innerHTML = '<div style="color: #8a99ad; font-size: 12px; text-align: center; padding: 10px;">No pending deposit requests.</div>';
+                <div class="menu-item" onclick="logout()">
+                    <div class="menu-left">
+                        <span class="menu-icon" style="color: #dc2626;">🚪</span>
+                        <span style="color: #dc2626;">Log Out</span>
+                    </div>
+                    <span class="menu-arrow">&gt;</span>
+                </div>
+            </div>
+
+            <!-- CHANGE PASSWORD FORM CONTAINER -->
+            <div id="passFormCard" class="card" style="display: none;">
+                <h4 style="margin-bottom: 10px; color: #38bdf8;">🔑 Change Password</h4>
+                <label style="font-size: 12px; color: #94a3b8;">Current Password</label>
+                <input type="password" id="oldPassInput" placeholder="Enter current password">
+                <label style="font-size: 12px; color: #94a3b8;">New Password</label>
+                <input type="password" id="newPassInput" placeholder="Enter new password">
+                <button class="btn btn-orange" onclick="updatePassword()">Update Login Password</button>
+            </div>
+
+            <!-- CHANGE PAYMENT PASSWORD FORM CONTAINER -->
+            <div id="payPassFormCard" class="card" style="display: none;">
+                <h4 style="margin-bottom: 10px; color: #38bdf8;">🛡️ Change Payment Password</h4>
+                <label style="font-size: 12px; color: #94a3b8;">New Payment Password (PIN)</label>
+                <input type="password" id="newPayPassInput" placeholder="Enter 6-digit payment PIN">
+                <button class="btn btn-green" onclick="updatePaymentPassword()">Update Payment Password</button>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL PAGE -->
+        <div id="pageAdmin" class="page">
+            <button class="btn-back" onclick="navigateTo('pageHome')">&lt; Home Back</button>
+            <h2 style="margin-bottom: 15px; color: #dc2626;">⚙️ Admin Control Panel</h2>
+            <div class="card">
+                <h4 style="margin-bottom: 8px;">💳 Set Deposit Address</h4>
+                <input type="text" id="adminSysDepositAddr" placeholder="Enter official TRX address">
+                <button class="btn btn-blue" onclick="updateAdminDepositAddr()">Update Deposit Address</button>
+            </div>
+            <div class="card">
+                <h4 style="margin-bottom: 8px;">📥 Deposit Requests (DP)</h4>
+                <div id="adminDepositList" style="margin-top: 10px;"></div>
+            </div>
+            <div class="card">
+                <h4 style="margin-bottom: 8px;">📤 Withdrawal Requests (WD)</h4>
+                <div id="adminWithdrawList" style="margin-top: 10px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION BAR -->
+    <div class="nav-bar" id="bottomNavBar" style="display: none;">
+        <a href="javascript:void(0)" class="nav-item active" onclick="navigateTo('pageHome')">
+            <span class="nav-icon">🏠</span>Home
+        </a>
+        <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('pageVideoTask')">
+            <span class="nav-icon">🎬</span>Video Task
+        </a>
+        <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('pageRecharge')">
+            <span class="nav-icon">💳</span>Recharge
+        </a>
+        <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('pageWithdraw')">
+            <span class="nav-icon">💰</span>Withdraw
+        </a>
+        <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('pageTeam')">
+            <span class="nav-icon">👥</span>Team
+        </a>
+        <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('pageSettings')">
+            <span class="nav-icon">⚙️</span>Settings
+        </a>
+    </div>
+
+    <script>
+        const ADMIN_PHONE = '01883418514';
+        const VIDEO_TASKS = [
+            { id: 1, title: 'Adds View 1 Video Task', min: 15, max: 1000, rate: 0.0199, videoId: 'dQw4w9WgXcQ' },
+            { id: 2, title: 'Adds View 2 Video Task', min: 25, max: 1000, rate: 0.0199, videoId: '3JZ_D3ELwOQ' },
+            { id: 3, title: 'Adds View 3 Video Task', min: 50, max: 100000, rate: 0.0199, videoId: 'L_LUpnjgPso' },
+            { id: 4, title: 'Adds View 4 Video Task', min: 75, max: 100000, rate: 0.0199, videoId: 'fJ9rUzIMcZQ' },
+            { id: 5, title: 'Adds View 5 Video Task', min: 100, max: 100000, rate: 0.0199, videoId: 'kJQP7kiw5Fk' },
+            { id: 6, title: 'Adds View 6 Video Task', min: 200, max: 100000, rate: 0.0199, videoId: '9bZkp7q19f0' }
+        ];
+
+        let state = {
+            users: JSON.parse(localStorage.getItem('app_users') || '{}'),
+            deposits: JSON.parse(localStorage.getItem('app_deposits') || '[]'),
+            withdrawals: JSON.parse(localStorage.getItem('app_withdrawals') || '[]'),
+            systemDepositAddr: localStorage.getItem('app_sys_addr') || 'TE1uZ1NTAdgKdizRvL1UQFc775kUBn7S7G',
+            currentUserPhone: localStorage.getItem('app_current_user') || null
+        };
+
+        let ytPlayers = {};
+        let activeTimers = {};
+        let timerIntervals = {};
+
+        function saveState() {
+            localStorage.setItem('app_users', JSON.stringify(state.users));
+            localStorage.setItem('app_deposits', JSON.stringify(state.deposits));
+            localStorage.setItem('app_withdrawals', JSON.stringify(state.withdrawals));
+            localStorage.setItem('app_sys_addr', state.systemDepositAddr);
+            if (state.currentUserPhone) localStorage.setItem('app_current_user', state.currentUserPhone);
+            else localStorage.removeItem('app_current_user');
         }
-      });
-    }
 
-    function approveDeposit(depKey, targetPhone, amount) {
-      let exactAmount = parseFloat(amount);
-      if (isNaN(exactAmount) || exactAmount <= 0) {
-        alert("Invalid deposit amount!");
-        return;
-      }
-
-      db.ref('deposits/' + depKey + '/status').once('value', snapshot => {
-        let currentStatus = snapshot.val();
-        if (currentStatus === 'Success') {
-          alert("This deposit has already been approved!");
-          return;
+        if (!state.users[ADMIN_PHONE]) {
+            state.users[ADMIN_PHONE] = {
+                phone: ADMIN_PHONE,
+                name: 'System Admin',
+                pass: '123456',
+                balance: 50000,
+                todayEarnings: 0,
+                refBy: null,
+                completedTasks: [],
+                pendingReturns: []
+            };
+            saveState();
         }
 
-        db.ref('deposits/' + depKey + '/status').set('Success', (err) => {
-          if (!err) {
-            db.ref('users/' + targetPhone + '/balance').transaction(currentBal => {
-              let current = parseFloat(currentBal) || 0;
-              return current + exactAmount;
-            }, (error, committed) => {
-              if (!error && committed) {
-                alert(`✅ Approved ${exactAmount} TRX for user ${targetPhone}!`);
-              } else {
-                alert("Status updated but failed to increase user balance.");
-              }
+        let isRegister = false;
+        function toggleAuthMode() {
+            isRegister = !isRegister;
+            document.getElementById('registerFields').style.display = isRegister ? 'block' : 'none';
+            document.getElementById('authSubmitBtn').innerText = isRegister ? 'Register' : 'Login';
+            document.getElementById('authToggleBtn').innerText = isRegister ? 'Already have an account? Login' : 'Need an account? Register';
+        }
+
+        function handleAuthSubmit() {
+            const phone = document.getElementById('authPhone').value.trim();
+            const pass = document.getElementById('authPass').value.trim();
+
+            if (!phone || !pass) return alert('Please enter phone and password!');
+
+            if (isRegister) {
+                const name = document.getElementById('authName').value.trim();
+                const ref = document.getElementById('authRef').value.trim();
+                if (state.users[phone]) return alert('Phone number already registered!');
+                
+                state.users[phone] = {
+                    phone: phone,
+                    name: name || 'User ' + phone.slice(-4),
+                    pass: pass,
+                    balance: 0,
+                    todayEarnings: 0,
+                    refBy: state.users[ref] ? ref : null,
+                    completedTasks: [],
+                    pendingReturns: []
+                };
+                saveState();
+                alert('Registration successful! Please login.');
+                toggleAuthMode();
+            } else {
+                if (!state.users[phone] || state.users[phone].pass !== pass) return alert('Invalid credentials!');
+                state.currentUserPhone = phone;
+                saveState();
+                initAppView();
+            }
+        }
+
+        function logout() {
+            state.currentUserPhone = null;
+            saveState();
+            location.reload();
+        }
+
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            if (pageId === 'pageHome') document.querySelectorAll('.nav-item')[0].classList.add('active');
+            if (pageId === 'pageVideoTask') document.querySelectorAll('.nav-item')[1].classList.add('active');
+            if (pageId === 'pageRecharge') document.querySelectorAll('.nav-item')[2].classList.add('active');
+            if (pageId === 'pageWithdraw') document.querySelectorAll('.nav-item')[3].classList.add('active');
+            if (pageId === 'pageTeam') document.querySelectorAll('.nav-item')[4].classList.add('active');
+            if (pageId === 'pageSettings') document.querySelectorAll('.nav-item')[5].classList.add('active');
+
+            if (pageId === 'pageTaskHistory') renderTaskHistory();
+            if (pageId === 'pageAdmin') renderAdminPanel();
+        }
+
+        function togglePassForm() {
+            const el = document.getElementById('passFormCard');
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function togglePayPassForm() {
+            const el = document.getElementById('payPassFormCard');
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function updatePassword() {
+            const oldP = document.getElementById('oldPassInput').value.trim();
+            const newP = document.getElementById('newPassInput').value.trim();
+            const user = state.users[state.currentUserPhone];
+
+            if (!oldP || !newP) return alert('Please enter both current and new password');
+            if (user.pass !== oldP) return alert('Current password is incorrect');
+
+            user.pass = newP;
+            saveState();
+            alert('Password updated successfully!');
+            document.getElementById('oldPassInput').value = '';
+            document.getElementById('newPassInput').value = '';
+            togglePassForm();
+        }
+
+        function updatePaymentPassword() {
+            const newPay = document.getElementById('newPayPassInput').value.trim();
+            const user = state.users[state.currentUserPhone];
+
+            if (!newPay) return alert('Please enter new payment password');
+            user.payPass = newPay;
+            saveState();
+            alert('Payment Password updated successfully!');
+            document.getElementById('newPayPassInput').value = '';
+            togglePayPassForm();
+        }
+
+        function checkPending24hReturns() {
+            if (!state.currentUserPhone) return;
+            const user = state.users[state.currentUserPhone];
+            if (!user || !user.pendingReturns) return;
+
+            const now = Date.now();
+            let updated = false;
+
+            user.pendingReturns = user.pendingReturns.filter(ret => {
+                if (now >= ret.releaseTime) {
+                    user.balance += ret.returnAmount;
+                    updated = true;
+                    return false;
+                }
+                return true;
             });
-          } else {
-            alert("Failed to update deposit status!");
-          }
-        });
-      });
-    }
 
-    function rejectDeposit(depKey) {
-      db.ref('deposits/' + depKey + '/status').set('Rejected', (err) => {
-        if (!err) {
-          alert("❌ Deposit rejected.");
+            if (updated) saveState();
         }
-      });
-    }
-  </script>
+
+        function initAppView() {
+            if (!state.currentUserPhone) return;
+            checkPending24hReturns();
+            const user = state.users[state.currentUserPhone];
+
+            document.getElementById('pageAuth').classList.remove('active');
+            document.getElementById('pageHome').classList.add('active');
+            document.getElementById('bottomNavBar').style.display = 'flex';
+
+            document.getElementById('dashBalance').innerText = user.balance.toFixed(2);
+            document.getElementById('topTodayEarnings').innerText = (user.todayEarnings || 0).toFixed(4);
+
+            if (user.phone === ADMIN_PHONE) {
+                document.getElementById('adminBtnContainer').style.display = 'block';
+            }
+
+            const refLink = window.location.origin + window.location.pathname + '?ref=' + user.phone;
+            document.getElementById('teamRefLink').value = refLink;
+            document.getElementById('setRefLink').value = refLink;
+            document.getElementById('setProfileName').innerText = user.name;
+            document.getElementById('setProfilePhone').innerText = user.phone;
+            document.getElementById('rechargeAddressDisplay').value = state.systemDepositAddr;
+
+            renderVideoTasks();
+        }
+
+        function renderVideoTasks() {
+            const container = document.getElementById('videoTasksList');
+            container.innerHTML = '';
+            const user = state.users[state.currentUserPhone];
+
+            VIDEO_TASKS.forEach(task => {
+                const isCompletedRecently = (user.completedTasks || []).find(t => t.taskId === task.id && (Date.now() - t.timestamp < 24 * 3600 * 1000));
+                
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                if (isCompletedRecently) {
+                    const remainingMs = (24 * 3600 * 1000) - (Date.now() - isCompletedRecently.timestamp);
+                    const hours = Math.floor(remainingMs / 3600000);
+                    const mins = Math.floor((remainingMs % 3600000) / 60000);
+
+                    card.innerHTML = `
+                        <h3>▶ ${task.title}</h3>
+                        <p style="font-size: 12px; color: #16a34a; margin: 5px 0;">💰 Price: ${task.min} - ${task.max} TRX | Daily Commission: 1.99%</p>
+                        <div style="background: #080e1e; padding: 15px; text-align: center; border-radius: 8px; margin-top: 10px;">
+                            <span style="color: #ea580c; font-weight: bold;">⏳ You can work again after 24 hours (${hours}h ${mins}m remaining)</span>
+                        </div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <h3>▶ ${task.title}</h3>
+                        <p style="font-size: 12px; color: #16a34a; margin: 5px 0;">💰 Price: ${task.min} - ${task.max} TRX | Daily Commission: 1.99%</p>
+                        <div class="video-container">
+                            <div class="timer-badge" id="timer-badge-${task.id}">⏱ Watch 60s</div>
+                            <div id="player-${task.id}"></div>
+                        </div>
+                        <button class="btn btn-blue" id="task-btn-${task.id}" onclick="startVideoTask(${task.id})">▶ Start Watching Ad (Stake TRX & Earn)</button>
+                    `;
+                }
+                container.appendChild(card);
+            });
+        }
+
+        function startVideoTask(taskId) {
+            const user = state.users[state.currentUserPhone];
+            const task = VIDEO_TASKS.find(t => t.id === taskId);
+
+            if (user.balance < task.min) {
+                return alert(`Insufficient balance! Minimum ${task.min} TRX required in balance to start this task.`);
+            }
+
+            const stakedAmount = task.min;
+            user.balance -= stakedAmount;
+            saveState();
+            document.getElementById('dashBalance').innerText = user.balance.toFixed(2);
+
+            const btn = document.getElementById(`task-btn-${taskId}`);
+            btn.classList.add('btn-disabled');
+            btn.innerText = 'Watching in Progress...';
+            btn.disabled = true;
+
+            activeTimers[taskId] = 60;
+
+            ytPlayers[taskId] = new YT.Player(`player-${taskId}`, {
+                videoId: task.videoId,
+                events: {
+                    'onStateChange': (e) => onPlayerStateChange(e, taskId, stakedAmount)
+                }
+            });
+        }
+
+        function onPlayerStateChange(event, taskId, stakedAmount) {
+            const badge = document.getElementById(`timer-badge-${taskId}`);
+            
+            if (event.data === YT.PlayerState.PLAYING) {
+                if (!timerIntervals[taskId]) {
+                    timerIntervals[taskId] = setInterval(() => {
+                        activeTimers[taskId]--;
+                        badge.innerText = `⏱ Watch ${activeTimers[taskId]}s`;
+
+                        if (activeTimers[taskId] <= 0) {
+                            clearInterval(timerIntervals[taskId]);
+                            completeVideoTask(taskId, stakedAmount);
+                        }
+                    }, 1000);
+                }
+            } else {
+                if (timerIntervals[taskId]) {
+                    clearInterval(timerIntervals[taskId]);
+                    timerIntervals[taskId] = null;
+                    badge.innerText = `⏸ Paused (${activeTimers[taskId]}s remaining)`;
+                }
+            }
+        }
+
+        function completeVideoTask(taskId, stakedAmount) {
+            const user = state.users[state.currentUserPhone];
+            const task = VIDEO_TASKS.find(t => t.id === taskId);
+            
+            const profit = stakedAmount * task.rate;
+            const totalReturn = stakedAmount + profit;
+
+            user.todayEarnings = (user.todayEarnings || 0) + profit;
+            
+            if (!user.completedTasks) user.completedTasks = [];
+            user.completedTasks.unshift({
+                taskId: task.id,
+                title: task.title,
+                staked: stakedAmount,
+                profit: profit,
+                totalReturn: totalReturn,
+                timestamp: Date.now()
+            });
+
+            if (!user.pendingReturns) user.pendingReturns = [];
+            user.pendingReturns.push({
+                staked: stakedAmount,
+                profit: profit,
+                returnAmount: totalReturn,
+                releaseTime: Date.now() + (24 * 3600 * 1000)
+            });
+
+            saveState();
+            alert(`Task Completed Successfully!\n\nStaked: ${stakedAmount.toFixed(2)} TRX\nProfit: +${profit.toFixed(4)} TRX\n\nTotal ${totalReturn.toFixed(4)} TRX will be unlocked & added to balance in 24 hours.`);
+            renderVideoTasks();
+        }
+
+        function renderTaskHistory() {
+            const container = document.getElementById('taskHistoryList');
+            const user = state.users[state.currentUserPhone];
+
+            if (!user.completedTasks || user.completedTasks.length === 0) {
+                container.innerHTML = '<div style="color: #94a3b8; text-align: center;">No completed task records found.</div>';
+                return;
+            }
+
+            container.innerHTML = user.completedTasks.map(t => `
+                <div class="history-item">
+                    <div class="history-header">
+                        <span>${t.title}</span>
+                        <span style="color: #16a34a;">+${t.profit.toFixed(4)} TRX</span>
+                    </div>
+                    <div style="font-size: 11px; color: #94a3b8;">${new Date(t.timestamp).toLocaleString()}</div>
+                    <div class="history-details">
+                        <div>🔒 Staked Bet Amount: <b style="color: #fff;">${t.staked.toFixed(2)} TRX</b></div>
+                        <div>📈 Commission (1.99%): <b style="color: #16a34a;">+${t.profit.toFixed(4)} TRX</b></div>
+                        <div style="grid-column: span 2;">🔄 24h Automatic Return Total: <b style="color: #38bdf8;">${t.totalReturn.toFixed(4)} TRX</b></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function calculateNetPay() {
+            const amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+            const net = amt * 0.93;
+            document.getElementById('netPayDisplay').innerText = net.toFixed(2);
+        }
+
+        function submitDeposit() {
+            const amt = parseFloat(document.getElementById('depositAmount').value);
+            const txid = document.getElementById('depositTxid').value.trim();
+
+            if (!amt || amt <= 0 || !txid) return alert('Enter valid amount and TXID!');
+
+            state.deposits.unshift({
+                id: Date.now(),
+                userPhone: state.currentUserPhone,
+                amount: amt,
+                txid: txid,
+                status: 'Pending',
+                timestamp: Date.now()
+            });
+
+            saveState();
+            alert('Deposit request submitted successfully! Waiting for admin approval.');
+            document.getElementById('depositAmount').value = '';
+            document.getElementById('depositTxid').value = '';
+        }
+
+        function submitWithdrawal() {
+            const amt = parseFloat(document.getElementById('withdrawAmount').value);
+            const addr = document.getElementById('withdrawAddress').value.trim();
+            const user = state.users[state.currentUserPhone];
+
+            if (!amt || amt <= 0 || !addr) return alert('Enter valid amount and wallet address!');
+            if (user.balance < amt) return alert('Insufficient balance!');
+
+            user.balance -= amt;
+            state.withdrawals.unshift({
+                id: Date.now(),
+                userPhone: state.currentUserPhone,
+                amount: amt,
+                netPay: amt * 0.93,
+                address: addr,
+                status: 'Processing',
+                timestamp: Date.now()
+            });
+
+            saveState();
+            alert('Withdrawal request submitted successfully!');
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('withdrawAddress').value = '';
+            document.getElementById('dashBalance').innerText = user.balance.toFixed(2);
+        }
+
+        function renderAdminPanel() {
+            document.getElementById('adminSysDepositAddr').value = state.systemDepositAddr;
+
+            const depList = document.getElementById('adminDepositList');
+            depList.innerHTML = state.deposits.map(dep => `
+                <div class="history-item" style="border-left-color: ${dep.status === 'Pending' ? '#ea580c' : dep.status === 'Success' ? '#16a34a' : '#dc2626'}">
+                    <div class="history-header">
+                        <span>User: ${dep.userPhone}</span>
+                        <span style="color: #38bdf8;">${dep.amount} TRX</span>
+                    </div>
+                    <div style="font-size: 12px; color: #94a3b8;">TXID: ${dep.txid}</div>
+                    <div style="margin-top: 5px;">
+                        Status: <span class="status-badge ${dep.status === 'Pending' ? 'bg-pending' : dep.status === 'Success' ? 'bg-success' : 'bg-rejected'}">${dep.status}</span>
+                    </div>
+                    ${dep.status === 'Pending' ? `
+                        <div class="grid-2" style="margin-top: 10px;">
+                            <button class="btn btn-green" onclick="approveDeposit(${dep.id})">Approve</button>
+                            <button class="btn btn-red" onclick="rejectDeposit(${dep.id})">Reject</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+
+            const wdList = document.getElementById('adminWithdrawList');
+            wdList.innerHTML = state.withdrawals.map(wd => `
+                <div class="history-item" style="border-left-color: ${wd.status === 'Processing' ? '#ea580c' : wd.status === 'Success' ? '#16a34a' : '#dc2626'}">
+                    <div class="history-header">
+                        <span>User: ${wd.userPhone}</span>
+                        <span style="color: #dc2626;">${wd.amount} TRX</span>
+                    </div>
+                    <div style="font-size: 12px; color: #16a34a;">Net Pay (93%): ${wd.netPay.toFixed(2)} TRX</div>
+                    <div style="font-size: 12px; color: #94a3b8;">Address: ${wd.address}</div>
+                    <div style="margin-top: 5px;">
+                        Status: <span class="status-badge ${wd.status === 'Processing' ? 'bg-pending' : wd.status === 'Success' ? 'bg-success' : 'bg-rejected'}">${wd.status}</span>
+                    </div>
+                    ${wd.status === 'Processing' ? `
+                        <div class="grid-2" style="margin-top: 10px;">
+                            <button class="btn btn-green" onclick="approveWithdrawal(${wd.id})">Approve</button>
+                            <button class="btn btn-red" onclick="rejectWithdrawal(${wd.id})">Reject & Refund</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function updateAdminDepositAddr() {
+            const addr = document.getElementById('adminSysDepositAddr').value.trim();
+            if (!addr) return alert('Enter valid address');
+            state.systemDepositAddr = addr;
+            saveState();
+            alert('Deposit address updated successfully!');
+        }
+
+        function approveDeposit(depId) {
+            const dep = state.deposits.find(d => d.id === depId);
+            if (!dep || dep.status !== 'Pending') return;
+
+            dep.status = 'Success';
+            if (state.users[dep.userPhone]) {
+                state.users[dep.userPhone].balance += dep.amount;
+            }
+            saveState();
+            renderAdminPanel();
+        }
+
+        function rejectDeposit(depId) {
+            const dep = state.deposits.find(d => d.id === depId);
+            if (!dep || dep.status !== 'Pending') return;
+            dep.status = 'Rejected';
+            saveState();
+            renderAdminPanel();
+        }
+
+        function approveWithdrawal(wdId) {
+            const wd = state.withdrawals.find(w => w.id === wdId);
+            if (!wd || wd.status !== 'Processing') return;
+            wd.status = 'Success';
+            saveState();
+            renderAdminPanel();
+        }
+
+        function rejectWithdrawal(wdId) {
+            const wd = state.withdrawals.find(w => w.id === wdId);
+            if (!wd || wd.status !== 'Processing') return;
+
+            wd.status = 'Rejected';
+            if (state.users[wd.userPhone]) {
+                state.users[wd.userPhone].balance += wd.amount;
+            }
+            saveState();
+            renderAdminPanel();
+        }
+
+        function copyText(elementId) {
+            const copyText = document.getElementById(elementId);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+            alert('Copied to clipboard: ' + copyText.value);
+        }
+
+        window.onload = function() {
+            if (state.currentUserPhone && state.users[state.currentUserPhone]) {
+                initAppView();
+            }
+        };
+    </script>
 </body>
 </html>
