@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRX Admin Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h2 { color: #333; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+        th { background: #007bff; color: white; }
+        .btn-approve { background: #28a745; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
+        .btn-reject { background: #dc3545; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Admin Panel - Deposit Requests</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Username / Wallet</th>
+                <th>Amount (TRX)</th>
+                <th>TrxID</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="depositTableBody">
+            <!-- JavaScript দ্বারা ডেটা এখানে লোড হবে -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function loadDeposits() {
+        const tbody = document.getElementById('depositTableBody');
+        tbody.innerHTML = '';
+        
+        // লোকালস্টোরেজ থেকে ডিপোজিট ডেটা ফেচ করা (ইউজার সাইটের কি 'deposits' অনুযায়ী)
+        let deposits = JSON.parse(localStorage.getItem('deposits') || '[]');
+
+        if (deposits.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5">কোনো ডিপোজিট রিকোয়েস্ট নেই</td></tr>`;
+            return;
+        }
+
+        deposits.forEach((dep, index) => {
+            let row = `<tr>
+                <td>${dep.username || dep.wallet || 'N/A'}</td>
+                <td>${dep.amount} TRX</td>
+                <td>${dep.trxId || 'N/A'}</td>
+                <td>${dep.status || 'Pending'}</td>
+                <td>
+                    <button class="btn-approve" onclick="updateStatus(${index}, 'Approved')">Approve</button>
+                    <button class="btn-reject" onclick="updateStatus(${index}, 'Rejected')">Reject</button>
+                </td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+
+    function updateStatus(index, status) {
+        let deposits = JSON.parse(localStorage.getItem('deposits') || '[]');
+        deposits[index].status = status;
+        localStorage.setItem('deposits', JSON.stringify(deposits));
+        loadDeposits();
+    }
+
+    // পেজ লোড হওয়ার সাথে সাথে ডেটা দেখাবে
+    window.onload = loadDeposits;
+</script>
+
+</body>
+</html>
