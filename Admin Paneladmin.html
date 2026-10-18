@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Admin Panel - DP & WD Control</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #080e1e; color: #ffffff; min-height: 100vh; padding: 20px 10px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #1e293b; padding-bottom: 15px; }
+        .header h1 { color: #dc2626; font-size: 22px; margin-bottom: 5px; }
+        .header p { color: #94a3b8; font-size: 13px; }
+        .card { background: #111a2e; border-radius: 12px; padding: 16px; margin-bottom: 15px; border: 1px solid #1e293b; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
+        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .title-dp { color: #ea580c; }
+        .title-wd { color: #16a34a; }
+        .title-wallet { color: #38bdf8; }
+        .btn { width: 100%; padding: 10px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 13px; margin-top: 6px; }
+        .btn-green { background: #16a34a; color: #fff; }
+        .btn-red { background: #dc2626; color: #fff; }
+        .btn-blue { background: #0284c7; color: #fff; }
+        .btn-orange { background: #ea580c; color: #fff; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        input { width: 100%; padding: 10px; background: #080e1e; border: 1px solid #1e293b; color: #fff; border-radius: 6px; margin-top: 6px; margin-bottom: 10px; font-size: 13px; outline: none; }
+        input:focus { border-color: #38bdf8; }
+        .request-item { background: #080e1e; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #334155; }
+        .req-pending { border-left-color: #ea580c; }
+        .req-success { border-left-color: #16a34a; }
+        .req-rejected { border-left-color: #dc2626; }
+        .req-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; margin-bottom: 4px; }
+        .req-sub { font-size: 12px; color: #94a3b8; margin-bottom: 4px; word-break: break-all; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .bg-pending { background: #ea580c; color: #fff; }
+        .bg-success { background: #16a34a; color: #fff; }
+        .bg-rejected { background: #dc2626; color: #fff; }
+        .login-box { max-width: 400px; margin: 80px auto; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- AUTH LOGIN FOR ADMIN PANEL -->
+        <div id="adminAuthPage" class="card login-box">
+            <h2 style="text-align: center; color: #dc2626; margin-bottom: 15px;">🔒 Admin Panel Login</h2>
+            <label style="font-size: 12px; color: #94a3b8;">Admin Phone</label>
+            <input type="text" id="adminPhone" placeholder="01883418514">
+            <label style="font-size: 12px; color: #94a3b8;">Password</label>
+            <input type="password" id="adminPass" placeholder="123456">
+            <button class="btn btn-red" onclick="loginAdmin()">Login to Master Control</button>
+        </div>
+
+        <!-- MAIN DASHBOARD PANEL -->
+        <div id="adminMainPage" style="display: none;">
+            <div class="header">
+                <h1>⚙️ TRX Master Admin Control</h1>
+                <p>Manage Deposits, Withdrawals & Wallet Settings</p>
+            </div>
+
+            <!-- WALLET ADDRESS CONTROL -->
+            <div class="card">
+                <div class="card-title title-wallet">💳 Official TRX Deposit Wallet Address</div>
+                <input type="text" id="sysWalletAddr" placeholder="Enter new TRX wallet address">
+                <button class="btn btn-blue" onclick="saveWalletAddress()">Update Wallet Address</button>
+            </div>
+
+            <!-- DEPOSIT (DP) CONTROL -->
+            <div class="card">
+                <div class="card-title title-dp">
+                    <span>📥 Deposit Requests (DP)</span>
+                    <small style="font-size: 11px; color: #94a3b8;" id="dpCount">0 Total</small>
+                </div>
+                <div id="depositListContainer"></div>
+            </div>
+
+            <!-- WITHDRAWAL (WD) CONTROL -->
+            <div class="card">
+                <div class="card-title title-wd">
+                    <span>📤 Withdrawal Requests (WD)</span>
+                    <small style="font-size: 11px; color: #94a3b8;" id="wdCount">0 Total</small>
+                </div>
+                <div id="withdrawListContainer"></div>
+            </div>
+
+            <button class="btn btn-red" style="margin-top: 10px;" onclick="adminLogout()">🚪 Exit Admin Panel</button>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PHONE = '01883418514';
+        const ADMIN_PASS = '123456';
+
+        let state = {
+            users: JSON.parse(localStorage.getItem('app_users') || '{}'),
+            deposits: JSON.parse(localStorage.getItem('app_deposits') || '[]'),
+            withdrawals: JSON.parse(localStorage.getItem('app_withdrawals') || '[]'),
+            systemDepositAddr: localStorage.getItem('app_sys_addr') || 'TE1uZ1NTAdgKdizRvL1UQFc775kUBn7S7G'
+        };
+
+        function saveState() {
+            localStorage.setItem('app_users', JSON.stringify(state.users));
+            localStorage.setItem('app_deposits', JSON.stringify(state.deposits));
+            localStorage.setItem('app_withdrawals', JSON.stringify(state.withdrawals));
+            localStorage.setItem('app_sys_addr', state.systemDepositAddr);
+        }
+
+        function loginAdmin() {
+            const phone = document.getElementById('adminPhone').value.trim();
+            const pass = document.getElementById('adminPass').value.trim();
+
+            if (phone === ADMIN_PHONE && pass === ADMIN_PASS) {
+                document.getElementById('adminAuthPage').style.display = 'none';
+                document.getElementById('adminMainPage').style.display = 'block';
+                loadAdminData();
+            } else {
+                alert('Invalid Admin Credentials!');
+            }
+        }
+
+        function adminLogout() {
+            location.reload();
+        }
+
+        function loadAdminData() {
+            document.getElementById('sysWalletAddr').value = state.systemDepositAddr;
+
+            const dpContainer = document.getElementById('depositListContainer');
+            document.getElementById('dpCount').innerText = `${state.deposits.length} Records`;
+
+            if (state.deposits.length === 0) {
+                dpContainer.innerHTML = '<p style="color: #94a3b8; font-size: 12px; text-align: center;">No deposit requests found.</p>';
+            } else {
+                dpContainer.innerHTML = state.deposits.map(dep => `
+                    <div class="request-item ${dep.status === 'Pending' ? 'req-pending' : dep.status === 'Success' ? 'req-success' : 'req-rejected'}">
+                        <div class="req-header">
+                            <span>📱 User: ${dep.userPhone}</span>
+                            <span style="color: #38bdf8;">${dep.amount} TRX</span>
+                        </div>
+                        <div class="req-sub"><b>TXID:</b> ${dep.txid}</div>
+                        <div class="req-sub"><b>Time:</b> ${new Date(dep.timestamp).toLocaleString()}</div>
+                        <div style="margin-top: 4px;">
+                            Status: <span class="badge ${dep.status === 'Pending' ? 'bg-pending' : dep.status === 'Success' ? 'bg-success' : 'bg-rejected'}">${dep.status}</span>
+                        </div>
+                        ${dep.status === 'Pending' ? `
+                            <div class="grid-2" style="margin-top: 8px;">
+                                <button class="btn btn-green" onclick="approveDeposit(${dep.id})">Approve (Add TRX)</button>
+                                <button class="btn btn-red" onclick="rejectDeposit(${dep.id})">Reject Request</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            }
+
+            const wdContainer = document.getElementById('withdrawListContainer');
+            document.getElementById('wdCount').innerText = `${state.withdrawals.length} Records`;
+
+            if (state.withdrawals.length === 0) {
+                wdContainer.innerHTML = '<p style="color: #94a3b8; font-size: 12px; text-align: center;">No withdrawal requests found.</p>';
+            } else {
+                wdContainer.innerHTML = state.withdrawals.map(wd => `
+                    <div class="request-item ${wd.status === 'Processing' ? 'req-pending' : wd.status === 'Success' ? 'req-success' : 'req-rejected'}">
+                        <div class="req-header">
+                            <span>📱 User: ${wd.userPhone}</span>
+                            <span style="color: #dc2626;">-${wd.amount} TRX</span>
+                        </div>
+                        <div class="req-sub" style="color: #16a34a;"><b>Net Pay (93%):</b> ${wd.netPay ? wd.netPay.toFixed(2) : (wd.amount * 0.93).toFixed(2)} TRX</div>
+                        <div class="req-sub"><b>Address:</b> ${wd.address}</div>
+                        <div class="req-sub"><b>Time:</b> ${new Date(wd.timestamp).toLocaleString()}</div>
+                        <div style="margin-top: 4px;">
+                            Status: <span class="badge ${wd.status === 'Processing' ? 'bg-pending' : wd.status === 'Success' ? 'bg-success' : 'bg-rejected'}">${wd.status}</span>
+                        </div>
+                        ${wd.status === 'Processing' ? `
+                            <div class="grid-2" style="margin-top: 8px;">
+                                <button class="btn btn-green" onclick="approveWithdrawal(${wd.id})">Approve Withdrawal</button>
+                                <button class="btn btn-red" onclick="rejectWithdrawal(${wd.id})">Reject & Refund</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            }
+        }
+
+        function saveWalletAddress() {
+            const addr = document.getElementById('sysWalletAddr').value.trim();
+            if (!addr) return alert('Enter valid wallet address');
+            state.systemDepositAddr = addr;
+            saveState();
+            alert('System Deposit Wallet Address Updated!');
+        }
+
+        function approveDeposit(depId) {
+            const dep = state.deposits.find(d => d.id === depId);
+            if (!dep || dep.status !== 'Pending') return;
+
+            dep.status = 'Success';
+            if (state.users[dep.userPhone]) {
+                state.users[dep.userPhone].balance += dep.amount;
+            }
+            saveState();
+            loadAdminData();
+            alert(`Deposit of ${dep.amount} TRX approved and added to user balance!`);
+        }
+
+        function rejectDeposit(depId) {
+            const dep = state.deposits.find(d => d.id === depId);
+            if (!dep || dep.status !== 'Pending') return;
+
+            dep.status = 'Rejected';
+            saveState();
+            loadAdminData();
+            alert('Deposit Request Rejected!');
+        }
+
+        function approveWithdrawal(wdId) {
+            const wd = state.withdrawals.find(w => w.id === wdId);
+            if (!wd || wd.status !== 'Processing') return;
+
+            wd.status = 'Success';
+            saveState();
+            loadAdminData();
+            alert('Withdrawal Request Approved!');
+        }
+
+        function rejectWithdrawal(wdId) {
+            const wd = state.withdrawals.find(w => w.id === wdId);
+            if (!wd || wd.status !== 'Processing') return;
+
+            wd.status = 'Rejected';
+            if (state.users[wd.userPhone]) {
+                state.users[wd.userPhone].balance += wd.amount;
+            }
+            saveState();
+            loadAdminData();
+            alert(`Withdrawal Rejected and ${wd.amount} TRX refunded to user balance!`);
+        }
+    </script>
+</body>
+</html>
